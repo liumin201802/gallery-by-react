@@ -27,7 +27,38 @@ imageDatas = ((imageDatasArr) => {
 	return imageDatasArr;
 })(imageDatas);
 
+// 控制组件
+class ControllerUnits extends React.Component{
+	constructor(props) {
+	    super(props);
+	    this.handleClick = this.handleClick.bind(this);
+	}
 
+	handleClick(e){
+		// 如果点击的是当前正在选中的按钮，则翻转图片
+		if (this.props.arrange.isCenter) {
+			this.props.inverse();
+		}else{
+			this.props.center();
+		}
+		e.preventDefault();
+		e.stopPropagation();
+	}
+
+	render(){
+		let controllerUnitsClassName = "controller-unit";
+		// 如果当前是居中态
+		if (this.props.arrange.isCenter) {
+			controllerUnitsClassName += " is-center";
+			// 如果当前是翻转态
+			if (this.props.arrange.isInverse) {
+				controllerUnitsClassName += " is-inverse";
+			};
+		};
+		return (<span className={controllerUnitsClassName} onClick={this.handleClick}></span>)
+	}
+
+}
 
 class ImgFigure extends React.Component {
 	constructor(props) {
@@ -49,7 +80,6 @@ class ImgFigure extends React.Component {
 	    e.preventDefault();
 	}
 
-
 	render() {
 		var styleObj = {};
 
@@ -60,7 +90,7 @@ class ImgFigure extends React.Component {
 
 		// 如果图片的旋转角度有值并且不为0，添加旋转角度
 		if (this.props.arrange.rotate) {
-			(['Moz', 'Ms', 'Webkit', '']).forEach(function(value) {
+			(['Moz', 'ms', 'Webkit', '']).forEach(function(value) {
 				styleObj[value + 'Transform'] = 'rotate(' + this.props.arrange.rotate + 'deg)';
 			}.bind(this));
 		};
@@ -286,9 +316,11 @@ class AppComponent extends React.Component {
 					isCenter: false
 				}
 			};
-			imgFigures.push( <ImgFigure data = {value} ref = {"imgFigure" + index} arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)} center={this.center(index)}/>)
+			imgFigures.push( <ImgFigure key={index} data = {value} ref = {"imgFigure" + index} arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)} center={this.center(index)}/>)
+			controllerUnits.push(<ControllerUnits key={index} arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)} center={this.center(index)}/>);
 		}.bind(this));
 
+		
 		return ( <section className = "stage" ref = "stage"> 
 			<section className = "img-sec"> {imgFigures} </section> 
 			<nav className = "controller-nav"> {controllerUnits} 
